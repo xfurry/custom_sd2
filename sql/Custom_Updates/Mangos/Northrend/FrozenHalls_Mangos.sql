@@ -11,7 +11,7 @@ UPDATE `creature_template` SET `ScriptName`='npc_SoulHorror' WHERE `entry`=36522
 -- Boss
 UPDATE `creature_template` SET `ScriptName`='boss_Bronjahn' WHERE `entry`=36497;
 UPDATE `creature_template` SET `ScriptName`='mob_corrupted_soul_fragment' WHERE `entry`=36535;
-UPDATE `creature_template` SET `ScriptName`='boss_Devourer_of_Souls' WHERE `entry`=36502;
+UPDATE `creature_template` SET mechanic_immune_mask = 764362751, `ScriptName`='boss_Devourer_of_Souls' WHERE `entry`=36502;
 UPDATE `creature_template` SET `ScriptName`='mob_well_of_souls' WHERE `entry`=36536;
 -- Npc
 UPDATE `creature_template` SET `ScriptName`='npc_slyvanas_jaina_fos_start' WHERE `entry` in (37596, 37597);
@@ -44,6 +44,7 @@ UPDATE `creature_template` SET `ScriptName`='boss_Krick' WHERE `entry`=36477;
 UPDATE `creature_template` SET `ScriptName`='mob_explosive_orb' WHERE `entry`=36610;
 UPDATE `creature_template` SET `ScriptName`='boss_Tyrannus' WHERE `entry`=36658;
 UPDATE `creature_template` SET `ScriptName`='boss_Rimefang' WHERE `entry`=36661;
+UPDATE `creature_template` SET `ScriptName`='mob_icy_blast' WHERE `entry`=36731;
 -- npc
 UPDATE `creature_template` SET `ScriptName`='npc_slyvanas_jaina_pos_start' WHERE `entry` in (36993, 36990);
 UPDATE `creature_template` SET `ScriptName`='npc_slyvanas_jaina_pos_end' WHERE `entry` in (38188, 38189);
@@ -75,7 +76,7 @@ update instance_template set script = 'instance_forge_of_souls' where map = 632;
 
 update gameobject set spawntimesecs = -604800 where id in (202212, 201710, 202337, 202336);
 UPDATE gameobject_template SET faction = 0 WHERE entry in (202212, 201710, 202337, 202336);
-UPDATE gameobject_template SET faction = 114 WHERE entry in (201385, 197342, 197343, 201976, 197341, 202236, 202302, 201709);
+UPDATE gameobject_template SET faction = 114 WHERE entry in (201848, 201385, 197342, 197343, 201976, 197341, 202236, 202302, 201709);
 
 #UPDATE `creature_template` SET `ScriptName`='generic_creature' WHERE `entry` in ();
 delete from game_tele where id = 1500;

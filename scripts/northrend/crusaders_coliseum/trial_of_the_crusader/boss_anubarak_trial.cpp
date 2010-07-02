@@ -39,8 +39,8 @@ enum
     EMOTE_PURSUE    = -1605137,
 
     SPELL_FREEZING_SLASH        = 66012,
-    SPELL_PENETRATING_COLD_10   = 68509,
-    SPELL_PENETRATING_COLD_25   = 67700,
+    SPELL_PENETRATING_COLD_10   = 67700,
+    SPELL_PENETRATING_COLD_25   = 68509,
 
     SPELL_PURSUING_SPIKES       = 65922,
     SPELL_PURSUED_BY_ANUB       = 67574,
@@ -419,7 +419,7 @@ struct MANGOS_DLL_DECL boss_anubarak_trialAI : public ScriptedAI
                             i->getSource()->DealDamage(i->getSource(), m_uiSwarmDmg, NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                         }
                     }
-                    m_creature->DealHeal(m_creature, m_uiSwarmDmgTotal, NULL);
+                    m_creature->DealHeal(m_creature, m_uiSwarmDmgTotal/2, NULL);
                 }
                 SwarmTickTimer = 1000;
             }

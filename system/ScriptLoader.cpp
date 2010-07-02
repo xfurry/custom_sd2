@@ -198,6 +198,7 @@ extern void AddSC_silvermoon_city();
 extern void AddSC_silverpine_forest();
 extern void AddSC_stormwind_city();
 extern void AddSC_stranglethorn_vale();
+extern void AddSC_swamp_of_sorrows();
 extern void AddSC_tirisfal_glades();
 extern void AddSC_undercity();
 extern void AddSC_western_plaguelands();
@@ -290,6 +291,11 @@ extern void AddSC_boss_anubarak();                          //azjol-nerub
 extern void AddSC_boss_hadronox();
 extern void AddSC_boss_krikthir();
 extern void AddSC_instance_azjol_nerub();
+extern void AddSC_boss_argent_challenge();                  //Crusaders' coliseum, trial_of_the_champion
+extern void AddSC_boss_black_knight();
+extern void AddSC_boss_grand_champions();
+extern void AddSC_instance_trial_of_the_champion();
+extern void AddSC_trial_of_the_champion();
 extern void AddSC_northrend_beasts();                       //Crusaders' Coliseum, trial_of_the_crusader
 extern void AddSC_boss_jaraxxus();
 extern void AddSC_boss_anubarak_trial();
@@ -689,6 +695,7 @@ void AddScripts()
     AddSC_silverpine_forest();
     AddSC_stormwind_city();
     AddSC_stranglethorn_vale();
+    AddSC_swamp_of_sorrows();
     AddSC_tirisfal_glades();
     AddSC_undercity();
     AddSC_western_plaguelands();
@@ -781,6 +788,11 @@ void AddScripts()
     AddSC_boss_hadronox();
     AddSC_boss_krikthir();
     AddSC_instance_azjol_nerub();
+    AddSC_boss_argent_challenge();                          //Crusaders' coliseum, trial_of_the_champion
+    AddSC_boss_black_knight();
+    AddSC_boss_grand_champions();
+    AddSC_instance_trial_of_the_champion();
+    AddSC_trial_of_the_champion();
     AddSC_northrend_beasts();                               //Crusaders' Coliseum, trial_of_the_crusader
     AddSC_boss_jaraxxus();
     AddSC_boss_anubarak_trial();

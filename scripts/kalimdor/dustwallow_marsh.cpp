@@ -918,7 +918,8 @@ void AddSC_dustwallow_marsh()
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name = "npc_lady_jaina_proudmoore";
+    newscript->Name = "boss_lady_jaina_proudmoore";
+	newscript->GetAI = &GetAI_boss_lady_jaina_proudmoore;
     newscript->pGossipHello = &GossipHello_npc_lady_jaina_proudmoore;
     newscript->pGossipSelect = &GossipSelect_npc_lady_jaina_proudmoore;
     newscript->RegisterSelf();
@@ -951,10 +952,5 @@ void AddSC_dustwallow_marsh()
     newscript->Name = "npc_cassa_crimsonwing";
     newscript->pGossipHello = &GossipHello_npc_cassa_crimsonwing;
     newscript->pGossipSelect = &GossipSelect_npc_cassa_crimsonwing;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "boss_lady_jaina_proudmoore";
-    newscript->GetAI = &GetAI_boss_lady_jaina_proudmoore;
     newscript->RegisterSelf();
 }

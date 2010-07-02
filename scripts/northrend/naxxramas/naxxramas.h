@@ -7,7 +7,13 @@
 
 enum
 {
-    MAX_ENCOUNTER               = 16,
+    MAX_ENCOUNTER               = 15,
+
+    // Kel'Thuzad's taunts after killing Wing Bosses
+    SAY_KELTHUZAD_TAUNT1        = -1533090,
+    SAY_KELTHUZAD_TAUNT2        = -1533091,
+    SAY_KELTHUZAD_TAUNT3        = -1533092,
+    SAY_KELTHUZAD_TAUNT4        = -1533093,
 
     TYPE_ANUB_REKHAN            = 1,
     TYPE_FAERLINA               = 2,
@@ -31,7 +37,7 @@ enum
     TYPE_SAPPHIRON              = 16,
     TYPE_KELTHUZAD              = 17,
 
-    //Misc
+        //Misc
     TYPE_KORTHAZZ,
     TYPE_BLAUMEAUX,
     TYPE_ZELIEK,
@@ -52,6 +58,8 @@ enum
     NPC_THANE                   = 16064,
     NPC_BLAUMEUX                = 16065,
     NPC_RIVENDARE               = 30549,
+
+    NPC_KELTHUZAD               = 15990,
 
     // Gothik
     NPC_GOTHIK                  = 16060,
@@ -88,7 +96,7 @@ enum
     GO_PLAG_LOAT_DOOR           = 181241,                   //encounter door
 
     // Military Quarter
-    GO_MILI_GOTH_ENTRY_GATE     = 181124,                   //open after razuvious died
+    GO_MILI_GOTH_ENTRY_GATE     = 181124,                   //used while encounter is in progress
     GO_MILI_GOTH_EXIT_GATE      = 181125,                   //exit, open at boss dead
     GO_MILI_GOTH_COMBAT_GATE    = 181170,                   //used while encounter is in progress
     GO_MILI_HORSEMEN_DOOR       = 181119,                   //encounter door
@@ -105,7 +113,7 @@ enum
 
     // Frostwyrm Lair
     GO_KELTHUZAD_WATERFALL_DOOR = 181225,                   // exit, open after sapphiron is dead
-    GO_KELTHUZAD_COMBAT_GATE    = 181228,
+    GO_KELTHUZAD_EXIT_DOOR      = 181228,
 
     // Eyes
     GO_ARAC_EYE_RAMP            = 181212,
@@ -156,7 +164,7 @@ class MANGOS_DLL_DECL instance_naxxramas : public ScriptedInstance
 
         void Initialize();
 
-        bool IsEncounterInProgress() const;
+        bool IsEncounterInProgress();
 
         void OnCreatureCreate(Creature* pCreature);
         void OnObjectCreate(GameObject* pGo);
@@ -181,7 +189,8 @@ class MANGOS_DLL_DECL instance_naxxramas : public ScriptedInstance
         // kel
         void SetChamberCenterCoords(float fX, float fY, float fZ);
         void GetChamberCenterCoords(float &fX, float &fY, float &fZ) { fX = m_fChamberCenterX; fY = m_fChamberCenterY; fZ = m_fChamberCenterZ; }
-
+        void DoTaunt();
+        
     protected:
         uint32 m_auiEncounter[MAX_ENCOUNTER];
         std::string strInstData;
@@ -212,6 +221,8 @@ class MANGOS_DLL_DECL instance_naxxramas : public ScriptedInstance
         uint64 m_uiThaddiusGUID;
         uint64 m_uiStalaggGUID;
         uint64 m_uiFeugenGUID;
+
+        uint64 m_uiKelthuzadGUID;
 
         uint64 m_uiPathExitDoorGUID;
         uint64 m_uiGlutExitDoorGUID;
@@ -244,7 +255,8 @@ class MANGOS_DLL_DECL instance_naxxramas : public ScriptedInstance
         uint64 m_uiLoathebDoorGUID;
 
         uint64 m_uiKelthuzadDoorGUID;
-        uint64 m_uiKelthuzadWaterfallDoorGUID;
+        uint64 m_uiKelthuzadExitDoorGUID;
+
         float m_fChamberCenterX;
         float m_fChamberCenterY;
         float m_fChamberCenterZ;
