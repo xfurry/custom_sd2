@@ -82,9 +82,7 @@ enum
     SPELL_LIGHT_VORTEX_25       = 67207,
     SPELL_LIGHT_VORTEX_10HC     = 67206,
     SPELL_LIGHT_VORTEX_25HC     = 67208,
-    SPELL_TOUCH_OF_LIGHT_10     = 65950,
-    SPELL_TOUCH_OF_LIGHT_25     = 67297,
-    SPELL_TOUCH_OF_LIGHT_10HC   = 67296,
+    SPELL_TOUCH_OF_LIGHT_10HC   = 67297,
     SPELL_TOUCH_OF_LIGHT_25HC   = 67298,
 
     SPELL_POWER_TWINS_10        = 65916,
@@ -114,9 +112,7 @@ enum
     SPELL_DARK_VORTEX_25            = 67183,
     SPELL_DARK_VORTEX_10HC          = 67182,
     SPELL_DARK_VORTEX_25HC          = 67184,
-    SPELL_TOUCH_OF_DARKNESS_10      = 66001,
-    SPELL_TOUCH_OF_DARKNESS_25      = 67282,
-    SPELL_TOUCH_OF_DARKNESS_10HC    = 67281,
+    SPELL_TOUCH_OF_DARKNESS_10HC    = 67282,
     SPELL_TOUCH_OF_DARKNESS_25HC    = 67283,
 
     SPELL_BERSERK                   = 26662,
@@ -177,37 +173,42 @@ struct MANGOS_DLL_DECL boss_fjolaAI : public ScriptedAI
     uint32 m_uiTwinSpikeTimer;
     uint32 m_uiSpecialSpellTimer;
     uint32 m_uiTwinPactTimer;
+	uint32 m_uiTouchTimer;
     uint32 m_uiCastTimeOut;
-
-    bool m_bHasShield;
-    uint32 m_uiPactCastTimer;
     bool m_bHasVortexCasted;
 
     uint32 m_uiDoorTimer;
     bool doorClosed;
 
     uint32 m_uiBerserkTimer;
-
     uint32 TeamInInstance;
+
+    bool m_bStartAttack;
+    uint32 m_uiAttackStartTimer;
 
     void Reset() 
     {
         m_uiTwinSpikeTimer      = 7000;
-        m_uiSpecialSpellTimer   = urand(55000, 60000); 
+        m_uiSpecialSpellTimer   = urand(40000, 45000); 
         m_uiTwinPactTimer       = 900000;
         m_uiCastTimeOut         = 900000;
+		m_uiTouchTimer			= 10000;
 
-        m_bHasShield = false;
-        m_uiPactCastTimer = 60000;
-
-        m_uiDoorTimer       = 5000;
+        m_bStartAttack          = false;
+        m_uiAttackStartTimer    = 10000;
+        m_uiDoorTimer           = 5000;
 
         TeamInInstance = GetFaction();
 
-        m_uiBerserkTimer    = 360000;  // 6 min
+        if(Difficulty == RAID_DIFFICULTY_10MAN_NORMAL || Difficulty == RAID_DIFFICULTY_25MAN_NORMAL)
+			m_uiBerserkTimer        = 480000;  // 8 min
+		else
+			m_uiBerserkTimer		= 360000;	// 6 min
 
         if(m_pInstance)
             m_pInstance->SetData(TYPE_TWINS_CASTING, NOT_STARTED);
+
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
         switch(urand(0, 1))
         {
@@ -216,6 +217,21 @@ struct MANGOS_DLL_DECL boss_fjolaAI : public ScriptedAI
         }
 
         m_creature->SetRespawnDelay(DAY);
+    }
+
+    void AttackStart(Unit* pWho)
+    {
+        if(!m_bStartAttack)
+            return;
+
+        if (m_creature->Attack(pWho, true)) 
+        {
+            m_creature->AddThreat(pWho);
+            m_creature->SetInCombatWith(pWho);
+            pWho->SetInCombatWith(m_creature);
+            DoStartMovement(pWho);
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        }
     }
 
     void JustDied(Unit* pKiller)
@@ -357,9 +373,6 @@ struct MANGOS_DLL_DECL boss_fjolaAI : public ScriptedAI
     {
         if(pDoneBy->GetGUID() == m_creature->GetGUID()) 
             return;
-
-        if(uiDamage > 0 && m_bHasShield)
-            m_bHasShield = false;
  
         if(pDoneBy->GetTypeId() == TYPEID_PLAYER)
         {
@@ -395,6 +408,15 @@ struct MANGOS_DLL_DECL boss_fjolaAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff)
     {
+        if (m_uiAttackStartTimer < uiDiff && !m_bStartAttack)
+        {
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            m_creature->SetInCombatWithZone();
+            m_bStartAttack = true;
+            m_uiDoorTimer = 100;
+        }
+        else m_uiAttackStartTimer -= uiDiff;
+
         //Return since we have no target
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
@@ -439,6 +461,23 @@ struct MANGOS_DLL_DECL boss_fjolaAI : public ScriptedAI
         else
             m_uiTwinSpikeTimer -= uiDiff;
 
+		// on heroic only
+		if (m_uiTouchTimer < uiDiff)
+		{
+            if(Difficulty == RAID_DIFFICULTY_10MAN_HEROIC)
+			{
+				if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+					DoCast(pTarget, SPELL_TOUCH_OF_LIGHT_10HC);
+			}
+			if(Difficulty == RAID_DIFFICULTY_25MAN_HEROIC)
+			{
+				if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+					DoCast(pTarget, SPELL_TOUCH_OF_LIGHT_25HC);
+			}
+			m_uiTouchTimer = 20000;
+		}
+		else m_uiTouchTimer -= uiDiff;
+
         if (m_uiSpecialSpellTimer < uiDiff)
         {
             if(m_pInstance->GetData(TYPE_TWINS_CASTING) != IN_PROGRESS)
@@ -477,37 +516,14 @@ struct MANGOS_DLL_DECL boss_fjolaAI : public ScriptedAI
                     m_bHasVortexCasted = false;
                     m_uiTwinPactTimer = 500;
                     m_uiCastTimeOut = 16000;
-
-                    m_uiPactCastTimer = 15000;
-                    m_bHasShield = true;
                 }
-                m_uiSpecialSpellTimer = urand(60000, 65000);
+                m_uiSpecialSpellTimer = urand(45000, 50000);
             }
             else
-                m_uiSpecialSpellTimer = urand(55000, 60000);
+                m_uiSpecialSpellTimer = urand(40000, 45000);
         }
         else
             m_uiSpecialSpellTimer -= uiDiff;
-
-        // ************ workaround for twins pact *************
-        if(m_uiPactCastTimer < uiDiff && m_bHasShield)
-        {
-            if(Creature* pEydis = GetClosestCreatureWithEntry(m_creature, NPC_EYDIS, 150.0f))
-            {
-                if(Difficulty == RAID_DIFFICULTY_10MAN_NORMAL)
-                    m_creature->DealHeal(pEydis, pEydis->GetMaxHealth()*0.2f, NULL);
-                if(Difficulty == RAID_DIFFICULTY_25MAN_NORMAL)
-                    m_creature->DealHeal(pEydis, pEydis->GetMaxHealth()*0.2f, NULL);
-                if(Difficulty == RAID_DIFFICULTY_10MAN_HEROIC)
-                    m_creature->DealHeal(pEydis, pEydis->GetMaxHealth()*0.5f, NULL);
-                if(Difficulty == RAID_DIFFICULTY_25MAN_HEROIC)
-                    m_creature->DealHeal(pEydis, pEydis->GetMaxHealth()*0.5f, NULL);
-                UpdateHealth();
-            }
-            m_bHasShield = false;
-        }
-        else
-            m_uiPactCastTimer -= uiDiff;
 
         if (m_uiTwinPactTimer < uiDiff)
         {
@@ -587,6 +603,7 @@ struct MANGOS_DLL_DECL boss_eydisAI : public ScriptedAI
     uint32 m_uiTwinSpikeTimer;
     uint32 m_uiSpecialSpellTimer;
     uint32 m_uiTwinPactTimer;
+	uint32 m_uiTouchTimer;
     uint32 m_uiOrbSummonTimer;
     uint32 m_uiCastTimeOut;
 
@@ -595,9 +612,6 @@ struct MANGOS_DLL_DECL boss_eydisAI : public ScriptedAI
     std::list<Creature*> lConcentrates;
 
     uint8 m_uiMaxOrbs;
-
-    bool m_bHasShield;
-    uint32 m_uiPactCastTimer;
     bool m_bHasVortexCasted;
 
     float angle;
@@ -606,24 +620,36 @@ struct MANGOS_DLL_DECL boss_eydisAI : public ScriptedAI
     uint32 m_uiBerserkTimer;
     uint32 m_uiEncounterTimer;
 
+    bool m_bStartAttack;
+    uint32 m_uiAttackStartTimer;
+
     void Reset() 
     {
         m_uiTwinSpikeTimer     = 7000;
-        m_uiSpecialSpellTimer  = urand(55000, 60000); 
+        m_uiSpecialSpellTimer  = urand(40000, 45000); 
         m_uiTwinPactTimer      = 900000;
         if(Difficulty == RAID_DIFFICULTY_10MAN_NORMAL || Difficulty == RAID_DIFFICULTY_25MAN_NORMAL)
             m_uiOrbSummonTimer  = urand(30000, 35000);
         else
             m_uiOrbSummonTimer  = urand(10000, 15000);
 
-        m_bHasShield = false;
-        m_uiPactCastTimer       = 60000;
+		m_uiTouchTimer			= 20000;
         m_uiCastTimeOut         = 900000;
-        m_uiBerserkTimer        = 360000;  // 6 min
+
+		if(Difficulty == RAID_DIFFICULTY_10MAN_NORMAL || Difficulty == RAID_DIFFICULTY_25MAN_NORMAL)
+			m_uiBerserkTimer        = 480000;  // 8 min
+		else
+			m_uiBerserkTimer		= 360000;	// 6 min
+
         m_uiEncounterTimer      = 0;
+
+        m_bStartAttack          = false;
+        m_uiAttackStartTimer    = 10000;
 
         if(m_pInstance)
             m_pInstance->SetData(TYPE_TWINS_CASTING, NOT_STARTED);
+
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
         switch(urand(0, 1))
         {
@@ -636,6 +662,21 @@ struct MANGOS_DLL_DECL boss_eydisAI : public ScriptedAI
         lConcentrates.clear();
 
         m_creature->SetRespawnDelay(DAY);
+    }
+
+    void AttackStart(Unit* pWho)
+    {
+        if(!m_bStartAttack)
+            return;
+
+        if (m_creature->Attack(pWho, true)) 
+        {
+            m_creature->AddThreat(pWho);
+            m_creature->SetInCombatWith(pWho);
+            pWho->SetInCombatWith(m_creature);
+            DoStartMovement(pWho);
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        }
     }
 
     void JustDied(Unit* pKiller)
@@ -756,9 +797,6 @@ struct MANGOS_DLL_DECL boss_eydisAI : public ScriptedAI
     {
         if(pDoneBy->GetGUID() == m_creature->GetGUID()) 
             return;
-
-        if(uiDamage > 0 && m_bHasShield)
-            m_bHasShield = false;
  
         if(pDoneBy->GetTypeId() == TYPEID_PLAYER)
         {
@@ -855,6 +893,14 @@ struct MANGOS_DLL_DECL boss_eydisAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff)
     {
+        if (m_uiAttackStartTimer < uiDiff && !m_bStartAttack)
+        {
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            m_creature->SetInCombatWithZone();
+            m_bStartAttack = true;
+        }
+        else m_uiAttackStartTimer -= uiDiff;
+
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim()) 
             return;
 
@@ -866,6 +912,7 @@ struct MANGOS_DLL_DECL boss_eydisAI : public ScriptedAI
             if(m_creature->getVictim()->GetGUID() == pFjola->GetGUID()) 
                 EnterEvadeMode();
         }
+
         if(m_uiEssenceBuffCheckTimer < uiDiff)
         {
             DoCheckEssenceBuff();
@@ -907,6 +954,23 @@ struct MANGOS_DLL_DECL boss_eydisAI : public ScriptedAI
         else
             m_uiTwinSpikeTimer -= uiDiff;
 
+		// on heroic only
+		if (m_uiTouchTimer < uiDiff)
+		{
+            if(Difficulty == RAID_DIFFICULTY_10MAN_HEROIC)
+			{
+				if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+					DoCast(pTarget, SPELL_TOUCH_OF_DARKNESS_10HC);
+			}
+			if(Difficulty == RAID_DIFFICULTY_25MAN_HEROIC)
+			{
+				if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+					DoCast(pTarget, SPELL_TOUCH_OF_DARKNESS_25HC);
+			}
+			m_uiTouchTimer = 20000;
+		}
+		else m_uiTouchTimer -= uiDiff;
+
         if (m_uiSpecialSpellTimer < uiDiff)
         {
             if(m_pInstance->GetData(TYPE_TWINS_CASTING) != IN_PROGRESS)
@@ -945,37 +1009,14 @@ struct MANGOS_DLL_DECL boss_eydisAI : public ScriptedAI
                     m_bHasVortexCasted = false;
                     m_uiTwinPactTimer = 500;
                     m_uiCastTimeOut = 16000;
-
-                    m_uiPactCastTimer = 15000;
-                    m_bHasShield = true;
                 }
-                m_uiSpecialSpellTimer = urand(60000, 65000);
+                m_uiSpecialSpellTimer = urand(45000, 50000);
             }
             else   
-                m_uiSpecialSpellTimer = urand(55000, 60000);
+                m_uiSpecialSpellTimer = urand(40000, 45000);
         }
         else
             m_uiSpecialSpellTimer -= uiDiff;
-
-        // ************ workaround for twins pact *************
-        if(m_uiPactCastTimer < uiDiff && m_bHasShield)
-        {
-            if(Creature* pFjola = GetClosestCreatureWithEntry(m_creature, NPC_FJOLA, 150.0f)) 
-            {
-                if(Difficulty == RAID_DIFFICULTY_10MAN_NORMAL)
-                    m_creature->DealHeal(pFjola, pFjola->GetMaxHealth()*0.2f, NULL);
-                if(Difficulty == RAID_DIFFICULTY_25MAN_NORMAL)
-                    m_creature->DealHeal(pFjola, pFjola->GetMaxHealth()*0.2f, NULL);
-                if(Difficulty == RAID_DIFFICULTY_10MAN_HEROIC)
-                    m_creature->DealHeal(pFjola, pFjola->GetMaxHealth()*0.5f, NULL);
-                if(Difficulty == RAID_DIFFICULTY_25MAN_HEROIC)
-                    m_creature->DealHeal(pFjola, pFjola->GetMaxHealth()*0.5f, NULL);
-                UpdateHealth();
-            }
-            m_bHasShield = false;
-        }
-        else
-            m_uiPactCastTimer -= uiDiff;
 
         if (m_uiTwinPactTimer < uiDiff)
         {
@@ -1071,48 +1112,42 @@ struct MANGOS_DLL_DECL mob_valkyr_orbAI : public ScriptedAI
     void CheckDistance()
     {
         // check for lightbane
-        if(Creature* pFjola = GetClosestCreatureWithEntry(m_creature, NPC_FJOLA, 3.0f))
+        if(Creature* pFjola = GetClosestCreatureWithEntry(m_creature, NPC_FJOLA, 2.0f))
         {
-            if(m_uiCreatureEntry == NPC_CONCENTRATED_LIGHT)
-            {
-                if (Unit* pTarget = pFjola->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-                {
-                    if(Difficulty == RAID_DIFFICULTY_10MAN_NORMAL)
-                        pFjola->CastSpell(pTarget, SPELL_TOUCH_OF_LIGHT_10, true);
-                    if(Difficulty == RAID_DIFFICULTY_25MAN_NORMAL)
-                        pFjola->CastSpell(pTarget, SPELL_TOUCH_OF_LIGHT_25, true);
-                    if(Difficulty == RAID_DIFFICULTY_10MAN_HEROIC)
-                        pFjola->CastSpell(pTarget, SPELL_TOUCH_OF_LIGHT_10HC, true);
-                    if(Difficulty == RAID_DIFFICULTY_25MAN_HEROIC)
-                        pFjola->CastSpell(pTarget, SPELL_TOUCH_OF_LIGHT_25HC, true);
+			if(m_uiCreatureEntry == NPC_CONCENTRATED_LIGHT)
+			{
+				if(Difficulty == RAID_DIFFICULTY_10MAN_NORMAL)
+					DoCast(m_creature, SPELL_UNLEASHED_LIGHT_10);
+				if(Difficulty == RAID_DIFFICULTY_25MAN_NORMAL)
+					DoCast(m_creature, SPELL_UNLEASHED_LIGHT_25);
+				if(Difficulty == RAID_DIFFICULTY_10MAN_HEROIC)
+					DoCast(m_creature, SPELL_UNLEASHED_LIGHT_10HC);
+				if(Difficulty == RAID_DIFFICULTY_25MAN_HEROIC)
+					DoCast(m_creature, SPELL_UNLEASHED_LIGHT_25HC);
 
-                    m_uiDieTimer = 1000;
-                    m_bMustDie = true;
-                    return;
-                }
-            }
+				m_uiDieTimer = 1000;
+				m_bMustDie = true;
+				return;
+			}
         }
         // check for darkbane
-        if(Creature* pEydis = GetClosestCreatureWithEntry(m_creature, NPC_EYDIS, 3.0f))
+        if(Creature* pEydis = GetClosestCreatureWithEntry(m_creature, NPC_EYDIS, 2.0f))
         {
-            if(m_uiCreatureEntry == NPC_CONCENTRATED_DARKNESS)
-            {
-                if (Unit* pTarget = pEydis->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-                {
-                    if(Difficulty == RAID_DIFFICULTY_10MAN_NORMAL)
-                        pEydis->CastSpell(pTarget, SPELL_TOUCH_OF_DARKNESS_10, true);
-                    if(Difficulty == RAID_DIFFICULTY_25MAN_NORMAL)
-                        pEydis->CastSpell(pTarget, SPELL_TOUCH_OF_DARKNESS_25, true);
-                    if(Difficulty == RAID_DIFFICULTY_10MAN_HEROIC)
-                        pEydis->CastSpell(pTarget, SPELL_TOUCH_OF_DARKNESS_10HC, true);
-                    if(Difficulty == RAID_DIFFICULTY_25MAN_HEROIC)
-                        pEydis->CastSpell(pTarget, SPELL_TOUCH_OF_DARKNESS_25HC, true);
+			if(m_uiCreatureEntry == NPC_CONCENTRATED_DARKNESS)
+			{
+				if(Difficulty == RAID_DIFFICULTY_10MAN_NORMAL)
+					DoCast(m_creature, SPELL_UNLEASHED_DARK_10);
+				if(Difficulty == RAID_DIFFICULTY_25MAN_NORMAL)
+					DoCast(m_creature, SPELL_UNLEASHED_DARK_25);
+				if(Difficulty == RAID_DIFFICULTY_10MAN_HEROIC)
+					DoCast(m_creature, SPELL_UNLEASHED_DARK_10HC);
+				if(Difficulty == RAID_DIFFICULTY_25MAN_HEROIC)
+					DoCast(m_creature, SPELL_UNLEASHED_DARK_25HC);
 
-                    m_uiDieTimer = 1000;
-                    m_bMustDie = true;
-                    return;
-                }
-            }
+				m_uiDieTimer = 1000;
+				m_bMustDie = true;
+				return;
+			}
         }
 
         // check for players

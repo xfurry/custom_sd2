@@ -38,8 +38,12 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
     uint32 m_auiEncounter[MAX_ENCOUNTER];
     uint32 m_auiHardBoss[HARD_ENCOUNTER];
     uint32 m_auiUlduarKeepers[KEEPER_ENCOUNTER];
+    uint32 m_auiUlduarTeleporters[3];
     uint32 m_auiMiniBoss[6];
-    uint32 mVision[3];
+
+    uint32 m_uiMimironPhase;
+    uint32 m_uiYoggPhase;
+    uint32 m_uiVisionPhase;
 
     uint64 m_uiLeviathanGUID;
     uint64 m_uiIgnisGUID;
@@ -58,10 +62,6 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
     uint64 m_uiAlgalonGUID;
     uint64 m_uiRightArmGUID;
     uint64 m_uiLeftArmGUID;
-    uint64 m_uiSentryGUID1;
-    uint64 m_uiSentryGUID2;
-    uint64 m_uiSentryGUID3;
-    uint64 m_uiSentryGUID4;
     uint64 m_uiFeralDefenderGUID;
     uint64 m_uiElderBrightleafGUID;
     uint64 m_uiElderStonebarkGUID;
@@ -69,9 +69,8 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
     uint64 m_uiSaroniteAnimusGUID;
     uint64 m_uiRunicColossusGUID;
     uint64 m_uiRuneGiantGUID;
+	uint64 m_uiJormungarGUID;
     uint64 m_uiLeviathanMkGUID;
-    uint64 m_uiVx001GUID;
-    uint64 m_uiAerialUnitGUID;
     uint64 m_uiHodirImageGUID;
     uint64 m_uiFreyaImageGUID;
     uint64 m_uiThorimImageGUID;
@@ -142,6 +141,7 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
         memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
         memset(&m_auiHardBoss, 0, sizeof(m_auiHardBoss));
         memset(&m_auiUlduarKeepers, 0, sizeof(m_auiUlduarKeepers));
+        memset(&m_auiUlduarTeleporters, 0, sizeof(m_auiUlduarTeleporters));
 
         for(uint8 i = 0; i < 6; i++)
             m_auiMiniBoss[i] = NOT_STARTED;
@@ -149,8 +149,9 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
         for(uint8 i = 0; i < 9; i++)
             m_uiMimironTelGUID[i] = 0;
 
-        for(uint8 i = 0; i < 3; i++)
-            mVision[i] = 0;
+        m_uiMimironPhase        = 0;
+        m_uiYoggPhase           = 0;
+        m_uiVisionPhase         = 0;
 
         m_uiLeviathanGUID       = 0;
         m_uiIgnisGUID           = 0;
@@ -169,19 +170,14 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
         m_uiRightArmGUID		= 0;
         m_uiLeftArmGUID			= 0;
         m_uiFeralDefenderGUID	= 0;
-        m_uiSentryGUID1			= 0;
-        m_uiSentryGUID2			= 0;
-        m_uiSentryGUID3			= 0;
-        m_uiSentryGUID4			= 0;
         m_uiElderBrightleafGUID = 0;
         m_uiElderStonebarkGUID  = 0;
         m_uiElderIronbrachGUID  = 0;
         m_uiSaroniteAnimusGUID  = 0;
         m_uiRunicColossusGUID   = 0;
         m_uiRuneGiantGUID       = 0;
+		m_uiJormungarGUID		= 0;
         m_uiLeviathanMkGUID     = 0;
-        m_uiVx001GUID           = 0;
-        m_uiAerialUnitGUID      = 0;
         m_uiHodirImageGUID      = 0;
         m_uiFreyaImageGUID      = 0;
         m_uiThorimImageGUID     = 0;
@@ -301,16 +297,6 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
         case NPC_AURIAYA:
             m_uiAuriayaGUID = pCreature->GetGUID();
             break;
-        case NPC_SANCTUM_SENTRY:
-            if (m_uiSentryGUID1 == 0)
-                m_uiSentryGUID1 = pCreature->GetGUID();
-            else if (m_uiSentryGUID2 == 0)
-                m_uiSentryGUID2 = pCreature->GetGUID();
-            else if (m_uiSentryGUID3 == 0)
-                m_uiSentryGUID3 = pCreature->GetGUID();
-            else if (m_uiSentryGUID4 == 0)
-                m_uiSentryGUID4 = pCreature->GetGUID();
-            break;
         case NPC_FERAL_DEFENDER:
             m_uiFeralDefenderGUID = pCreature->GetGUID();
             break;
@@ -319,12 +305,6 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
             break;
         case NPC_LEVIATHAN_MK:
             m_uiLeviathanMkGUID = pCreature->GetGUID();
-            break;
-        case NPC_VX001:
-            m_uiVx001GUID = pCreature->GetGUID();
-            break;
-        case NPC_AERIAL_UNIT:
-            m_uiAerialUnitGUID = pCreature->GetGUID();
             break;
         case NPC_HODIR:
             m_uiHodirGUID = pCreature->GetGUID();
@@ -338,6 +318,9 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
         case NPC_RUNE_GIANT:
             m_uiRuneGiantGUID = pCreature->GetGUID();
             break;
+		case NPC_JORMUNGAR_BEHEMOTH:
+			m_uiJormungarGUID = pCreature->GetGUID();
+			break;
         case NPC_FREYA:
             m_uiFreyaGUID = pCreature->GetGUID();
             break;
@@ -537,6 +520,7 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
             break;
         case GO_DOOR_LEVER:
             m_uiThorimLeverGUID = pGo->GetGUID();
+			pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
             break;
 
             // Prison
@@ -831,15 +815,6 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
         case TYPE_YOGGSARON:
             m_auiEncounter[12] = uiData;
             DoUseDoorOrButton(m_uiYoggGateGUID);
-            if (uiData == IN_PROGRESS)
-                CloseDoor(m_uiYoggGateGUID);
-            else
-            {
-                OpenDoor(m_uiYoggGateGUID);
-                CloseDoor(m_uiBrainDoor3GUID);
-                CloseDoor(m_uiBrainDoor1GUID);
-                CloseDoor(m_uiBrainDoor2GUID);
-            }
             break;
 
             // Celestial Planetarium
@@ -900,6 +875,17 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
             m_auiUlduarKeepers[3] = uiData;
             break;
 
+            // teleporters
+        case TYPE_LEVIATHAN_TP:
+            m_auiUlduarTeleporters[0] = uiData;
+            break;
+        case TYPE_XT002_TP:
+            m_auiUlduarTeleporters[1] = uiData;
+            break;
+        case TYPE_MIMIRON_TP:
+            m_auiUlduarTeleporters[2] = uiData;
+            break;
+
             // mini boss
         case TYPE_RUNIC_COLOSSUS:
             m_auiMiniBoss[0] = uiData;
@@ -917,13 +903,9 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
             break;
         case TYPE_LEVIATHAN_MK:
             m_auiMiniBoss[2] = uiData;
-            if (uiData == DONE)
-                CloseDoor(m_uiMimironElevatorGUID);
             break;
         case TYPE_VX001:
             m_auiMiniBoss[3] = uiData;
-            if (uiData == SPECIAL)
-                OpenDoor(m_uiMimironElevatorGUID);
             if (uiData == DONE)     // just for animation :)
             {
                 for(uint8 i = 0; i < 9; i++)
@@ -937,27 +919,15 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
             m_auiMiniBoss[5] = uiData;
             break;
 
-            //visions
-        case TYPE_VISION1:
-            mVision[0] = uiData;
-            if (uiData == DONE)
-                OpenDoor(m_uiBrainDoor3GUID);
-            else
-                CloseDoor(m_uiBrainDoor3GUID);
+            //phases
+        case TYPE_MIMIRON_PHASE:
+            m_uiMimironPhase = uiData;
             break;
-        case TYPE_VISION2:
-            mVision[1] = uiData;
-            if (uiData == DONE)
-                OpenDoor(m_uiBrainDoor1GUID);
-            else
-                CloseDoor(m_uiBrainDoor1GUID);
+        case TYPE_YOGG_PHASE:
+            m_uiYoggPhase = uiData;
             break;
-        case TYPE_VISION3:
-            mVision[2] = uiData;
-            if (uiData == DONE)
-                OpenDoor(m_uiBrainDoor2GUID);
-            else
-                CloseDoor(m_uiBrainDoor2GUID);
+        case TYPE_VISION_PHASE:
+            m_uiVisionPhase = uiData;
             break;
         }
 
@@ -975,7 +945,8 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
                 << m_auiHardBoss[1] << " " << m_auiHardBoss[2] << " " << m_auiHardBoss[2] << " "
                 << m_auiHardBoss[4] << " " << m_auiHardBoss[5] << " " << m_auiHardBoss[6] << " "
                 << m_auiHardBoss[7] << " " << m_auiHardBoss[8] << " " << m_auiUlduarKeepers[0] << " "
-                << m_auiUlduarKeepers[1] << " " << m_auiUlduarKeepers[2] << " " << m_auiUlduarKeepers[3];
+                << m_auiUlduarKeepers[1] << " " << m_auiUlduarKeepers[2] << " " << m_auiUlduarKeepers[3] << " "
+                << m_auiUlduarTeleporters[0] << " " << m_auiUlduarTeleporters[1] << " " << m_auiUlduarTeleporters[2];
 
             m_strInstData = saveStream.str();
 
@@ -1017,12 +988,8 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
             // Keepers
         case NPC_MIMIRON:
             return m_uiMimironGUID;
-        case DATA_LEVIATHAN_MK:
+        case NPC_LEVIATHAN_MK:
             return m_uiLeviathanMkGUID;
-        case DATA_VX001:
-            return m_uiVx001GUID;
-        case DATA_AERIAL_UNIT:
-            return m_uiAerialUnitGUID;
         case NPC_HODIR:
             return m_uiMimironGUID;
         case NPC_THORIM:
@@ -1031,6 +998,8 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
             return m_uiRuneGiantGUID;
         case NPC_RUNIC_COLOSSUS:
             return m_uiRunicColossusGUID;
+		case NPC_JORMUNGAR_BEHEMOTH:
+			return m_uiJormungarGUID;
         case NPC_FREYA:
             return m_uiFreyaGUID;
         case NPC_BRIGHTLEAF:
@@ -1041,11 +1010,11 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
             return m_uiElderStonebarkGUID;
         case NPC_VEZAX:
             return m_uiVezaxGUID;
-        case DATA_YOGGSARON:
+        case NPC_YOGGSARON:
             return m_uiYoggSaronGUID;
-        case DATA_SARA:
+        case NPC_SARA:
             return m_uiSaraGUID;
-        case DATA_YOGG_BRAIN:
+        case NPC_YOGG_BRAIN:
             return m_uiYoggBrainGUID;
         case NPC_ALGALON:
             return m_uiAlgalonGUID;
@@ -1059,16 +1028,19 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
             // celestial door
         case GO_CELESTIAL_DOOR:
             return m_uiCelestialDoorGUID;
-            // madness chamber doors
-        case DATA_BRAIN_DOOR1:
-            return m_uiBrainDoor1GUID;
-        case DATA_BRAIN_DOOR2:
-            return m_uiBrainDoor2GUID;
-        case DATA_BRAIN_DOOR3:
-            return m_uiBrainDoor3GUID;
         }
 
         return 0;
+    }
+
+    bool CheckAchievementCriteriaMeet(uint32 criteria_id, const Player *source)
+    {
+        switch(criteria_id)
+        {
+        case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET:
+            break;
+        }
+        return false;
     }
 
     uint32 GetData(uint32 uiType)
@@ -1134,6 +1106,14 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
         case TYPE_KEEPER_MIMIRON:
             return m_auiUlduarKeepers[3];
 
+            // teleporters
+        case TYPE_LEVIATHAN_TP:
+            return m_auiUlduarTeleporters[0];
+        case TYPE_XT002_TP:
+            return m_auiUlduarTeleporters[1];
+        case TYPE_MIMIRON_TP:
+            return m_auiUlduarTeleporters[2];
+
             // mini boss
         case TYPE_RUNE_GIANT:
             return m_auiMiniBoss[1];
@@ -1148,12 +1128,12 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
         case TYPE_YOGG_BRAIN:
             return m_auiMiniBoss[5];
 
-        case TYPE_VISION1:
-            return mVision[0];
-        case TYPE_VISION2:
-            return mVision[1];
-        case TYPE_VISION3:
-            return mVision[2];
+        case TYPE_MIMIRON_PHASE:
+            return m_uiMimironPhase;
+        case TYPE_YOGG_PHASE:
+            return m_uiYoggPhase;
+        case TYPE_VISION_PHASE:
+            return m_uiVisionPhase;
         }
 
         return 0;
@@ -1181,7 +1161,8 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
         >> m_auiEncounter[12] >> m_auiEncounter[13] >> m_auiHardBoss[0] >> m_auiHardBoss[1]
         >> m_auiHardBoss[2] >> m_auiHardBoss[3] >> m_auiHardBoss[4] >> m_auiHardBoss[5]
         >> m_auiHardBoss[6] >> m_auiHardBoss[7] >> m_auiHardBoss[8] >> m_auiUlduarKeepers[0]
-        >> m_auiUlduarKeepers[1] >> m_auiUlduarKeepers[2] >> m_auiUlduarKeepers[3];
+        >> m_auiUlduarKeepers[1] >> m_auiUlduarKeepers[2] >> m_auiUlduarKeepers[3] >> m_auiUlduarTeleporters[0]
+        >> m_auiUlduarTeleporters[1] >> m_auiUlduarTeleporters[2];
 
         for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
         {

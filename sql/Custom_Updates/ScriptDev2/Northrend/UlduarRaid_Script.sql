@@ -175,8 +175,6 @@ INSERT INTO `script_texts` (`entry`, `content_default`, `content_loc1`, `content
 (-1603187,"These pathetic mortals are harmless, beneath my station. Dispose of them!","","","","","","","","",15669,1,0,0,"sif despawn"),
 (-1603369,'Runic Colossus surrounds itself with a crackling Runic Barrier!' ,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_barrier'),
 (-1603370,'Ancient Rune Giant fortifies nearby allies with runic might!' ,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_barrier'),
-(-1603371,'Rune detonation on $N' ,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_detonation'),
-(-1603372,'Phase 2' ,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_phase'),
 
 -- Mimiron:
 (-1603241,"Oh, my! I wasn't expecting company! The workshop is such a mess! How embarrassing!","","","","","","","","",15611,1,0,0,"mimiron aggro"), 
@@ -199,6 +197,7 @@ INSERT INTO `script_texts` (`entry`, `content_default`, `content_loc1`, `content
 (-1603258,"You're not going to get up from that one, friend.","","","","","","","","",15626,1,0,0,"robot kill2"),	
 (-1603259,"It would appear that I've made a slight miscalculation. I allowed my mind to be corrupted by the fiend in the prison, overriding my primary directive. All systems seem to be functional now. Clear.","","","","","","","","",15627,1,0,0,"robot defeat"),
 (-1603260,"Combat matrix enhanced. Behold wonderous rapidity!","","","","","","","","",15630,1,0,0,"mimiron yogg"),
+(-1603371,'Leviathan Mk II begins to cast Plasma Blast!' ,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_plasma_blast'),
 
 -- vezax
 (-1603120,'Your destruction will herald a new age of suffering!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,15542,'1',NULL,NULL,'vezax aggro'),
@@ -234,6 +233,8 @@ INSERT INTO `script_texts` (`entry`, `content_default`, `content_loc1`, `content
 (-1603326,'Your fate is sealed. The end of days is finally upon you and ALL who inhabit this miserable little seedling. Uulwi ifis halahs gag erh\'ongg w\'ssh.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,15761,'1',NULL,NULL,'yogg death'),
 (-1603327,'Your will is no longer you own...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,15759,'4',NULL,NULL,'yogg insanity1'),
 (-1603328,'Destroy them minion, your master commands it!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,15760,'4',NULL,NULL,'yogg insanity2'),
+(-1603372,'Portals open into Yogg-Saron\'s mind!' ,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_vision_blast'),
+(-1603373,'The illusion shatters and a path to the central chamber opens!' ,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_shatter_blast'),
 -- Visions:
 -- lich king v3
 (-1603330,'Your resilience is admirable.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,15598,'0',NULL,NULL,'v1 lich king1'),

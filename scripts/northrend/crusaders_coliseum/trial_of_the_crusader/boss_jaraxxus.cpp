@@ -36,7 +36,6 @@ enum
     SAY_DEATH       = -1605020,
     SAY_BERSERK     = -1605025,
     EMOTE_PORTAL    = -1605138,
-    EMOTE_FLESH     = -1605139,
     EMOTE_VOLCANO   = -1605140,
 
     SAY_TIRION_JARU_OUTRO1      = -1605021,
@@ -197,13 +196,6 @@ CreatureAI* GetAI_npc_jaina(Creature* pCreature)
 ## boss_jaraxxus
 ######*/
 
-class MANGOS_DLL_DECL NetherPowerAura : public Aura
-{
-public:
-    NetherPowerAura(const SpellEntry *spell, SpellEffectIndex eff, int32 *bp, Unit *target, Unit *caster) : Aura(spell, eff, bp, target, caster, NULL)
-    {}
-};
-
 struct MANGOS_DLL_DECL boss_jaraxxusAI : public ScriptedAI
 {
     boss_jaraxxusAI(Creature* pCreature) : ScriptedAI(pCreature)
@@ -238,14 +230,15 @@ struct MANGOS_DLL_DECL boss_jaraxxusAI : public ScriptedAI
     std::list<Creature*> lMistres;
 
     uint8 m_uiAchievCounter;
+	bool m_bHasAura;
 
     void Reset() 
     {
         m_uiFelFireballTimer        = urand(20000, 25000);
         m_uiFelLightningTimer       = urand(5000, 8000);
-        m_uiIncinerateFleshTimer    = urand(15000, 20000);
-        m_uiLegionFlameTimer        = 30000;
-        m_uiSummonTimer             = 30000;
+        m_uiIncinerateFleshTimer    = 15000;
+        m_uiLegionFlameTimer        = 20000;
+        m_uiSummonTimer             = 20000;
         m_bVolcanoSummon            = true;
         m_uiNetherPowerTimer        = 40000;
         if(Difficulty == RAID_DIFFICULTY_10MAN_HEROIC || Difficulty == RAID_DIFFICULTY_25MAN_HEROIC)
@@ -258,6 +251,7 @@ struct MANGOS_DLL_DECL boss_jaraxxusAI : public ScriptedAI
         lFlames.clear();
         lMistres.clear();
         m_uiAchievCounter   = 0;
+		m_bHasAura			= false;
     }
 
     void JustReachedHome()
@@ -299,9 +293,7 @@ struct MANGOS_DLL_DECL boss_jaraxxusAI : public ScriptedAI
             m_creature->SetInCombatWith(pWho);
             pWho->SetInCombatWith(m_creature);
             DoStartMovement(pWho);
-            SpellEntry* spell = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_NETHER_POWER);
-            if(m_creature->AddAura(new NetherPowerAura(spell, EFFECT_INDEX_0, NULL, m_creature, m_creature)))
-                m_creature->GetAura(SPELL_NETHER_POWER, EFFECT_INDEX_0)->SetStackAmount(m_uiMaxNetherPower);
+			DoCast(m_creature, SPELL_NETHER_POWER);
         }
     }
 
@@ -371,15 +363,23 @@ struct MANGOS_DLL_DECL boss_jaraxxusAI : public ScriptedAI
     void UpdateAI(const uint32 uiDiff)
     {
         //Return since we have no target
-        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
-            return;
+		if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+			return;
+
+		if(SpellAuraHolder* netherAura = m_creature->GetSpellAuraHolder(SPELL_NETHER_POWER))
+		{
+			if(netherAura->GetStackAmount() < m_uiMaxNetherPower && !m_bHasAura)
+			{
+				m_bHasAura = true;
+				netherAura->SetStackAmount(m_uiMaxNetherPower);
+			}
+		}
 
         // spells
         if (m_uiIncinerateFleshTimer < uiDiff)
         {
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
             {
-                DoScriptText(EMOTE_FLESH, m_creature, pTarget);
                 if(Difficulty == RAID_DIFFICULTY_10MAN_NORMAL)
                     DoCast(pTarget, SPELL_INCINERATE_FLESH_10);
                 if(Difficulty == RAID_DIFFICULTY_25MAN_NORMAL)
@@ -389,7 +389,7 @@ struct MANGOS_DLL_DECL boss_jaraxxusAI : public ScriptedAI
                 if(Difficulty == RAID_DIFFICULTY_25MAN_HEROIC)
                     DoCast(pTarget, SPELL_INCINERATE_FLESH_25HC);
             }
-            m_uiIncinerateFleshTimer = urand(15000, 20000);
+            m_uiIncinerateFleshTimer = 25000;
         }
         else
             m_uiIncinerateFleshTimer -= uiDiff;
@@ -466,18 +466,17 @@ struct MANGOS_DLL_DECL boss_jaraxxusAI : public ScriptedAI
         {
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                 DoCast(pTarget, SPELL_LEGION_FLAME);
-            m_uiLegionFlameTimer = urand(20000, 30000);
+            m_uiLegionFlameTimer = 30000;
         }
         else
             m_uiLegionFlameTimer -= uiDiff;
 
-        if (m_uiNetherPowerTimer < uiDiff)
-        {
-            SpellEntry* spell = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_NETHER_POWER);
-            if(m_creature->AddAura(new NetherPowerAura(spell, EFFECT_INDEX_0, NULL, m_creature, m_creature)))
-                m_creature->GetAura(SPELL_NETHER_POWER, EFFECT_INDEX_0)->SetStackAmount(m_uiMaxNetherPower);
-            m_uiNetherPowerTimer = 40000;
-        }
+		if (m_uiNetherPowerTimer < uiDiff)
+		{
+			DoCast(m_creature, SPELL_NETHER_POWER);
+			m_bHasAura = true;
+			m_uiNetherPowerTimer = 40000;
+		}
         else
             m_uiNetherPowerTimer -= uiDiff;
 

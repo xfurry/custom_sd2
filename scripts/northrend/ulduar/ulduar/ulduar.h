@@ -44,26 +44,21 @@ enum
     TYPE_KEEPER_THORIM          = 48,
     TYPE_KEEPER_MIMIRON         = 49,
 
+    // teleporters
+    TYPE_LEVIATHAN_TP           = 50,
+    TYPE_XT002_TP               = 51,
+    TYPE_MIMIRON_TP             = 52,
+
     //other-> these won't be saved to db
     TYPE_RUNE_GIANT             = 14,
     TYPE_RUNIC_COLOSSUS         = 15,
     TYPE_LEVIATHAN_MK           = 16,
     TYPE_VX001                  = 17,
     TYPE_AERIAL_UNIT            = 18,
-    TYPE_VISION1                = 19,
-    TYPE_VISION2                = 20,
-    TYPE_VISION3                = 21, 
     TYPE_YOGG_BRAIN             = 22,
-
-    DATA_YOGGSARON              = 28,
-    DATA_LEVIATHAN_MK           = 54,
-    DATA_VX001                  = 55,
-    DATA_AERIAL_UNIT            = 56,
-    DATA_SARA                   = 61,
-    DATA_YOGG_BRAIN             = 62,
-    DATA_BRAIN_DOOR1            = 65,
-    DATA_BRAIN_DOOR2            = 66,
-    DATA_BRAIN_DOOR3            = 67,
+    TYPE_MIMIRON_PHASE          = 23,
+    TYPE_YOGG_PHASE             = 24,
+    TYPE_VISION_PHASE           = 25,
 
     // siege
     NPC_LEVIATHAN               = 33113,
@@ -90,6 +85,7 @@ enum
     NPC_THORIM                  = 32865,
     NPC_RUNIC_COLOSSUS          = 32872,
     NPC_RUNE_GIANT              = 32873,
+	NPC_JORMUNGAR_BEHEMOTH		= 32882,
     NPC_FREYA                   = 32906,
     NPC_BRIGHTLEAF              = 32915,
     NPC_IRONBRACH               = 32913,
@@ -206,6 +202,10 @@ enum
 
     ACHIEV_KEEPERS              = 2890,
     ACHIEV_KEEPERS_H            = 2891,
+
+    ACHIEV_CELESTIAL_DEFENDER   = 3259,     // realm first algalon
+    SPELL_ALGALON_ACHIEV_TRIGG  = 65184,
+    ACHIEV_DEATHS_DEMISE        = 3117,     // realm first yogg
 };
 
 #endif
