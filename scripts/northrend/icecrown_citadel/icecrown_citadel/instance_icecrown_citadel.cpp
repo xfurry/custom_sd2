@@ -85,6 +85,13 @@ struct MANGOS_DLL_DECL instance_icecrown_citadel : public ScriptedInstance
     uint64 m_uiBloodOrbGUID;
     uint64 m_uiBloodSigilGUID;
 
+	// frostwing
+	uint64 m_uiRimefangGUID;
+	uint64 m_uiSplinestalkerGUID;
+
+	// frozen throne
+	uint64 m_uiTirionFinalGUID;
+
     // loot
     uint64 m_uiDeathbringersCacheGUID;
     uint64 m_uiGunshipArmoryGUID;
@@ -104,6 +111,7 @@ struct MANGOS_DLL_DECL instance_icecrown_citadel : public ScriptedInstance
         m_uiFestergutGUID               = 0;
         m_uiRotfaceGUID                 = 0;
         m_uiPutricideGUID               = 0;
+		m_uiValithriaGUID				= 0;
 
         // lower spire
         m_uiMarrowgarIce1GUID           = 0;
@@ -134,6 +142,14 @@ struct MANGOS_DLL_DECL instance_icecrown_citadel : public ScriptedInstance
         m_uiBloodOrbGUID                = 0;
         m_uiBloodSigilGUID              = 0;
 
+		// frostwing
+		m_uiRimefangGUID				= 0;
+		m_uiSplinestalkerGUID			= 0;
+
+		// frozen throne
+		m_uiLichKingGUID				= 0;
+		m_uiTirionFinalGUID				= 0;
+
         // loot
         m_uiDeathbringersCacheGUID      = 0;
         m_uiGunshipArmoryGUID           = 0;
@@ -154,6 +170,11 @@ struct MANGOS_DLL_DECL instance_icecrown_citadel : public ScriptedInstance
             case NPC_KELESETH:      m_uiKelesethGUID        = pCreature->GetGUID(); break;
             case NPC_TALDARAM:      m_uiTaldaramGUID        = pCreature->GetGUID(); break;
             case NPC_LANATHEL:      m_uiLanathelGUID        = pCreature->GetGUID(); break;
+			case NPC_VALITHRIA:		m_uiValithriaGUID		= pCreature->GetGUID(); break;
+			case NPC_SPLINESTALKER:	m_uiSplinestalkerGUID	= pCreature->GetGUID(); break;
+			case NPC_RIMEFANG:		m_uiRimefangGUID		= pCreature->GetGUID(); break;
+			case NPC_LICH_KING:		m_uiLichKingGUID		= pCreature->GetGUID(); break;
+			case NPC_TIRION_FINAL:  m_uiTirionFinalGUID		= pCreature->GetGUID(); break;
         }
     }
 
@@ -592,6 +613,16 @@ struct MANGOS_DLL_DECL instance_icecrown_citadel : public ScriptedInstance
                 return m_uiRotfaceGUID;
             case NPC_PUTRICIDE:
                 return m_uiPutricideGUID;
+			case NPC_VALITHRIA:
+				return m_uiValithriaGUID;
+			case NPC_RIMEFANG:
+				return m_uiRimefangGUID;
+			case NPC_SPLINESTALKER:
+				return m_uiSplinestalkerGUID;
+			case NPC_LICH_KING:
+				return m_uiLichKingGUID;
+			case NPC_TIRION_FINAL:
+				return m_uiTirionFinalGUID;
         }
         return 0;
     }

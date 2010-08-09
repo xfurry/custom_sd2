@@ -24,16 +24,27 @@ enum
 
     TYPE_ATTEMPTS               = 13,
 
+	// lower spire
     NPC_MARROWGAR               = 36612,
     NPC_DEATHWHISPER            = 36855,
     NPC_SAURFANG                = 37813,
+	// plagueworks
     NPC_FESTERGUT               = 36626,
     NPC_ROTFACE                 = 36627,
     NPC_PUTRICIDE               = 36678,
+	// crimson halls
     NPC_VALANAR                 = 37970,
     NPC_KELESETH                = 37972,
     NPC_TALDARAM                = 37973,
     NPC_LANATHEL                = 37955,
+	// frostwing
+	NPC_VALITHRIA				= 36789,
+	NPC_SINDRAGOSA				= 36853,
+	NPC_RIMEFANG				= 37533,
+	NPC_SPLINESTALKER			= 37534,
+	// frozen throne
+	NPC_TIRION_FINAL			= 38995,
+	NPC_LICH_KING				= 36597,
 
     // Outer citadel
     GO_RAID_EXIT                = 201583,

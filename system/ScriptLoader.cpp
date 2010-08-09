@@ -151,9 +151,10 @@ extern void AddSC_boss_felmyst();
 extern void AddSC_boss_kiljaden();
 extern void AddSC_boss_muru_entropius();
 extern void AddSC_instance_sunwell_plateau();
-extern void AddSC_boss_ironaya();                           //uldaman
-extern void AddSC_uldaman();
+extern void AddSC_boss_archaedas();                         //uldaman
+extern void AddSC_boss_ironaya();
 extern void AddSC_instance_uldaman();
+extern void AddSC_uldaman();
 extern void AddSC_boss_akilzon();                           //zulaman
 extern void AddSC_boss_halazzi();
 extern void AddSC_boss_janalai();
@@ -234,6 +235,7 @@ extern void AddSC_boss_landslide();
 extern void AddSC_boss_noxxion();
 extern void AddSC_boss_ptheradras();
 extern void AddSC_boss_onyxia();                            //onyxias_lair
+extern void AddSC_instance_onyxias_lair();
 extern void AddSC_boss_amnennar_the_coldbringer();          //razorfen_downs
 extern void AddSC_razorfen_downs();
 extern void AddSC_instance_razorfen_kraul();                //razorfen_kraul
@@ -336,6 +338,7 @@ extern void AddSC_boss_saurfang();
 extern void AddSC_boss_festergut();
 extern void AddSC_boss_rotface();
 extern void AddSC_boss_professor_putricide();
+extern void AddSC_boss_blood_queen_lanathel();
 extern void AddSC_boss_sindragosa();
 extern void AddSC_boss_anubrekhan();                        //naxxramas
 extern void AddSC_boss_four_horsemen();
@@ -359,7 +362,13 @@ extern void AddSC_boss_ormorok();
 extern void AddSC_boss_telestra();
 extern void AddSC_instance_nexus();
 extern void AddSC_boss_sartharion();                        //obsidian_sanctum
-extern void AddSC_instance_obsidian_sanctum();
+extern void AddSC_instance_obsidian_sanctum();					
+extern void AddSC_boss_baltharus();							//ruby_sanctum
+extern void AddSC_boss_halion();
+extern void AddSC_boss_saviana();
+extern void AddSC_boss_zarithrian();
+extern void AddSC_instance_ruby_sanctum();
+extern void AddSC_ruby_sanctum();
 extern void AddSC_boss_bjarngrim();                         //Ulduar, halls_of_lightning
 extern void AddSC_boss_ionar();
 extern void AddSC_boss_loken();
@@ -649,9 +658,10 @@ void AddScripts()
     AddSC_boss_kiljaden();
     AddSC_boss_muru_entropius();
     AddSC_instance_sunwell_plateau();
-    AddSC_boss_ironaya();                                   //uldaman
-    AddSC_uldaman();
+    AddSC_boss_archaedas();                                 //uldaman
+    AddSC_boss_ironaya();
     AddSC_instance_uldaman();
+    AddSC_uldaman();
     AddSC_boss_akilzon();                                   //zulaman
     AddSC_boss_halazzi();
     AddSC_boss_janalai();
@@ -732,6 +742,7 @@ void AddScripts()
     AddSC_boss_noxxion();
     AddSC_boss_ptheradras();
     AddSC_boss_onyxia();                                    //onyxias_lair
+    AddSC_instance_onyxias_lair();
     AddSC_boss_amnennar_the_coldbringer();                  //razorfen_downs
     AddSC_razorfen_downs();
     AddSC_instance_razorfen_kraul();                        //razorfen_kraul
@@ -834,6 +845,7 @@ void AddScripts()
     AddSC_boss_festergut();
     AddSC_boss_rotface();
     AddSC_boss_professor_putricide();	
+	AddSC_boss_blood_queen_lanathel();
 	AddSC_boss_sindragosa();
     AddSC_boss_anubrekhan();                                //naxxramas
     AddSC_boss_four_horsemen();
@@ -858,6 +870,12 @@ void AddScripts()
     AddSC_instance_nexus();
     AddSC_boss_sartharion();                                //obsidian_sanctum
     AddSC_instance_obsidian_sanctum();
+	AddSC_boss_baltharus();									//ruby_sanctum
+	AddSC_boss_halion();
+	AddSC_boss_saviana();
+	AddSC_boss_zarithrian();
+	AddSC_instance_ruby_sanctum();
+	AddSC_ruby_sanctum();
     AddSC_boss_bjarngrim();                                 //Ulduar, halls_of_lightning
     AddSC_boss_ionar();
     AddSC_boss_loken();

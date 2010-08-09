@@ -390,7 +390,7 @@ CreatureAI* GetAI_npc_svala_channeler(Creature* pCreature)
     return new npc_svala_channelerAI(pCreature);
 }
 
-bool AreaTrigger_at_svala_intro(Player* pPlayer, AreaTriggerEntry* pAt)
+bool AreaTrigger_at_svala_intro(Player* pPlayer, AreaTriggerEntry const* pAt)
 {
     if (ScriptedInstance* pInstance = (ScriptedInstance*)pPlayer->GetInstanceData())
     {
